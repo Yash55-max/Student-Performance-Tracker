@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Subject Topper - Student Performance Tracker{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">🏆 Subject Topper</h1>
+        <p class="card-subtitle">Find the top-performing student in any subject</p>
+    </div>
+
+    {% if subjects %}
+    <form method="GET" action="{{ url_for('subject_topper', subject='') }}" id="topperForm">
+        <div class="form-group">
+            <label for="subject">Select Subject</label>
+            <select id="subject" name="subject" class="subject-select" onchange="navigateToTopper()">
+                <option value="">-- Choose a subject --</option>
+                {% for subject in subjects %}
+                <option value="{{ subject }}" {% if selected_subject==subject %}selected{% endif %}>{{ subject }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    {% if topper %}
+    <div class="card" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; margin-top: 2rem;">
+        <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🏆</div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">{{ topper.name }}</h2>
+            <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 1rem;">Roll Number: {{ topper.roll_number }}</p>
+            <div style="font-size: 3rem; font-weight: 700;">{{ topper.grade }}</div>
+            <p style="font-size: 1.1rem; opacity: 0.9;">Top score in {{ selected_subject }}</p>
+        </div>
+    </div>
+    {% elif selected_subject %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📚</div>
+        <div class="empty-state-text">No grades found for {{ selected_subject }}</div>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📚</div>
+        <div class="empty-state-text">No subjects available</div>
+        <p style="color: var(--text-secondary);">Add students and grades to see subject toppers</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function navigateToTopper() {
+        const select = document.getElementById('subject');
+        const subject = select.value;
+        if (subject) {
+            window.location.href = "{{ url_for('subject_topper', subject='SUBJECT') }}".replace('SUBJECT', encodeURIComponent(subject));
+        }
+    }
+</script>
+{% endblock %}

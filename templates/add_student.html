@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Add Student - Student Performance Tracker{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">➕ Add New Student</h1>
+        <p class="card-subtitle">Enter student information to add them to the system</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('add_student') }}">
+        <div class="form-group">
+            <label for="name">Student Name *</label>
+            <input type="text" id="name" name="name" required placeholder="Enter student's full name">
+        </div>
+
+        <div class="form-group">
+            <label for="roll_number">Roll Number *</label>
+            <input type="text" id="roll_number" name="roll_number" required placeholder="Enter unique roll number">
+        </div>
+
+        <div class="action-buttons">
+            <button type="submit" class="btn btn-primary">Add Student</button>
+            <a href="{{ url_for('students_list') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">ℹ️ Instructions</h2>
+    </div>
+    <ul style="color: var(--text-secondary); line-height: 2;">
+        <li>Student name should be the full name of the student</li>
+        <li>Roll number must be unique for each student</li>
+        <li>After adding a student, you can add their grades from the students list</li>
+        <li>All fields marked with * are required</li>
+    </ul>
+</div>
+{% endblock %}

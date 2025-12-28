@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Class Average - Student Performance Tracker{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">📈 Class Average</h1>
+        <p class="card-subtitle">Calculate the average performance for any subject</p>
+    </div>
+
+    {% if subjects %}
+    <form method="GET" action="{{ url_for('class_average', subject='') }}" id="averageForm">
+        <div class="form-group">
+            <label for="subject">Select Subject</label>
+            <select id="subject" name="subject" class="subject-select" onchange="navigateToAverage()">
+                <option value="">-- Choose a subject --</option>
+                {% for subject in subjects %}
+                <option value="{{ subject }}" {% if selected_subject==subject %}selected{% endif %}>{{ subject }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    {% if average is not none %}
+    <div class="card" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; margin-top: 2rem;">
+        <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 1rem; opacity: 0.9;">Class Average for {{ selected_subject }}
+            </h2>
+            <div style="font-size: 4rem; font-weight: 700; margin-bottom: 0.5rem;">{{ average }}</div>
+            <p style="font-size: 1.1rem; opacity: 0.9;">
+                {% if average >= 90 %}
+                Excellent class performance! 🌟
+                {% elif average >= 75 %}
+                Good class performance! 👍
+                {% elif average >= 60 %}
+                Satisfactory class performance ⚠️
+                {% else %}
+                Class needs improvement ⚡
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    {% elif selected_subject %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📚</div>
+        <div class="empty-state-text">No grades found for {{ selected_subject }}</div>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📚</div>
+        <div class="empty-state-text">No subjects available</div>
+        <p style="color: var(--text-secondary);">Add students and grades to see class averages</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function navigateToAverage() {
+        const select = document.getElementById('subject');
+        const subject = select.value;
+        if (subject) {
+            window.location.href = "{{ url_for('class_average', subject='SUBJECT') }}".replace('SUBJECT', encodeURIComponent(subject));
+        }
+    }
+</script>
+{% endblock %}

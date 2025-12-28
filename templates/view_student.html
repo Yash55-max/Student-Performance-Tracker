@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.name }} - Student Performance Tracker{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">👨‍🎓 Student Details</h1>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">{{ student.name }}</h2>
+        <p style="color: var(--text-secondary); font-size: 1.1rem;">Roll Number: <strong>{{ student.roll_number
+                }}</strong></p>
+    </div>
+
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="stat-card">
+            <div class="stat-value">{{ student.grades|length }}</div>
+            <div class="stat-label">Total Subjects</div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-value">{{ student.average }}</div>
+            <div class="stat-label">Average Grade</div>
+        </div>
+    </div>
+
+    <div class="action-buttons mt-3">
+        <a href="{{ url_for('add_grades', roll_number=student.roll_number) }}" class="btn btn-primary">➕ Add/Update
+            Grades</a>
+        <a href="{{ url_for('students_list') }}" class="btn btn-secondary">← Back to Students</a>
+    </div>
+</div>
+
+{% if student.grades %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">📊 Subject-wise Performance</h2>
+    </div>
+
+    {% for subject, grade in student.grades.items()|sort %}
+    <div class="grade-item">
+        <span class="grade-subject">{{ subject }}</span>
+        <span class="grade-value">
+            {% if grade >= 90 %}
+            <span class="badge badge-success">{{ grade }}</span>
+            {% elif grade >= 75 %}
+            <span class="badge badge-info">{{ grade }}</span>
+            {% elif grade >= 60 %}
+            <span class="badge badge-warning">{{ grade }}</span>
+            {% else %}
+            <span class="badge badge-danger">{{ grade }}</span>
+            {% endif %}
+        </span>
+    </div>
+    {% endfor %}
+
+    <div class="mt-3" style="padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-md);">
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Performance Summary</h3>
+        <p style="color: var(--text-secondary);">
+            {% if student.average >= 90 %}
+            🌟 Excellent performance! Keep up the great work!
+            {% elif student.average >= 75 %}
+            👍 Good performance! There's room for improvement.
+            {% elif student.average >= 60 %}
+            ⚠️ Satisfactory performance. Consider additional support.
+            {% else %}
+            ⚡ Needs improvement. Recommend focused attention.
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <div class="empty-state-icon">📝</div>
+        <div class="empty-state-text">No grades recorded yet</div>
+        <a href="{{ url_for('add_grades', roll_number=student.roll_number) }}" class="btn btn-primary">Add Grades</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

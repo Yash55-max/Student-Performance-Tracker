@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Add Grades - Student Performance Tracker{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">📝 Add Grades</h1>
+        <p class="card-subtitle">Adding grades for {{ student.name }} ({{ student.roll_number }})</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('add_grades', roll_number=student.roll_number) }}" id="gradesForm">
+        <div id="gradeInputs">
+            <div class="grade-input-group">
+                <div class="form-group">
+                    <label for="subject_1">Subject</label>
+                    <input type="text" id="subject_1" name="subject_1" placeholder="e.g., Mathematics">
+                </div>
+                <div class="form-group">
+                    <label for="grade_1">Grade (0-100)</label>
+                    <input type="number" id="grade_1" name="grade_1" min="0" max="100" step="0.01" placeholder="85">
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="button" class="remove-btn" onclick="removeGradeInput(this)"
+                        style="display: none;">Remove</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3" onclick="addGradeInput()">➕ Add Another Subject</button>
+
+        <div class="action-buttons">
+            <button type="submit" class="btn btn-primary">Save Grades</button>
+            <a href="{{ url_for('view_student', roll_number=student.roll_number) }}"
+                class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% if student.grades %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">📊 Current Grades</h2>
+    </div>
+    {% for subject, grade in student.grades.items() %}
+    <div class="grade-item">
+        <span class="grade-subject">{{ subject }}</span>
+        <span class="grade-value">{{ grade }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let gradeInputCount = 1;
+
+    function addGradeInput() {
+        gradeInputCount++;
+        const container = document.getElementById('gradeInputs');
+        const newInput = document.createElement('div');
+        newInput.className = 'grade-input-group';
+        newInput.innerHTML = `
+            <div class="form-group">
+                <label for="subject_${gradeInputCount}">Subject</label>
+                <input type="text" id="subject_${gradeInputCount}" name="subject_${gradeInputCount}" placeholder="e.g., Science">
+            </div>
+            <div class="form-group">
+                <label for="grade_${gradeInputCount}">Grade (0-100)</label>
+                <input type="number" id="grade_${gradeInputCount}" name="grade_${gradeInputCount}" min="0" max="100" step="0.01" placeholder="85">
+            </div>
+            <div class="form-group">
+                <label>&nbsp;</label>
+                <button type="button" class="remove-btn" onclick="removeGradeInput(this)">Remove</button>
+            </div>
+        `;
+        container.appendChild(newInput);
+
+        // Show remove button on first input if there are now multiple inputs
+        if (gradeInputCount > 1) {
+            const firstRemoveBtn = container.querySelector('.remove-btn');
+            if (firstRemoveBtn) {
+                firstRemoveBtn.style.display = 'block';
+            }
+        }
+    }
+
+    function removeGradeInput(button) {
+        const container = document.getElementById('gradeInputs');
+        const inputGroup = button.closest('.grade-input-group');
+        inputGroup.remove();
+        gradeInputCount--;
+
+        // Hide remove button on first input if only one input remains
+        if (gradeInputCount === 1) {
+            const firstRemoveBtn = container.querySelector('.remove-btn');
+            if (firstRemoveBtn) {
+                firstRemoveBtn.style.display = 'none';
+            }
+        }
+    }
+
+    // Form validation
+    document.getElementById('gradesForm').addEventListener('submit', function (e) {
+        const inputs = document.querySelectorAll('[name^="subject_"]');
+        let hasValidInput = false;
+
+        inputs.forEach(input => {
+            if (input.value.trim()) {
+                hasValidInput = true;
+            }
+        });
+
+        if (!hasValidInput) {
+            e.preventDefault();
+            alert('Please add at least one subject and grade');
+        }
+    });
+</script>
+{% endblock %}
