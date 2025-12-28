@@ -177,10 +177,13 @@ def export_data():
     """Export all student data to a text file."""
     students = db.get_all_students_with_grades()
     
-    # Create export directory if it doesn't exist
-    export_dir = 'exports'
-    if not os.path.exists(export_dir):
-        os.makedirs(export_dir)
+    # Use /tmp directory for Vercel, local 'exports' directory otherwise
+    if os.environ.get('VERCEL'):
+        export_dir = '/tmp'
+    else:
+        export_dir = 'exports'
+        if not os.path.exists(export_dir):
+            os.makedirs(export_dir)
     
     # Generate filename with timestamp
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
