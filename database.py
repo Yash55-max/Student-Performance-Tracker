@@ -7,7 +7,10 @@ import sqlite3
 import os
 from contextlib import contextmanager
 
-DATABASE_NAME = 'student_tracker.db'
+# Use /tmp directory for Vercel serverless functions
+# Note: Data will be ephemeral on Vercel (resets on each deployment)
+DATABASE_DIR = os.environ.get('DATABASE_DIR', '/tmp' if os.environ.get('VERCEL') else '.')
+DATABASE_NAME = os.path.join(DATABASE_DIR, 'student_tracker.db')
 
 @contextmanager
 def get_db_connection():
